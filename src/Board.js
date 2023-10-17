@@ -21,6 +21,7 @@ export default class Board extends React.Component {
       complete: React.createRef(),
     }
   }
+
   getClients() {
     return [
       ['1','Stark, White and Abbott','Cloned Optimal Architecture', 'in-progress'],
@@ -54,6 +55,18 @@ export default class Board extends React.Component {
     return (
       <Swimlane name={name} clients={clients} dragulaRef={ref}/>
     );
+  }
+
+    componentDidMount() {
+    this.dragulaContainers = Object.values(this.swimlanes).map(ref => ref.current);
+    this.dragulaInstance = Dragula(this.dragulaContainers, {
+    });
+  }
+
+  componentWillUnmount() {
+    if (this.dragulaInstance) {
+      this.dragulaInstance.destroy();
+    }
   }
 
   render() {
