@@ -1,27 +1,36 @@
 import React from 'react';
 import Card from './Card';
-import './Swimlane.css';
 
-export default class Swimlane extends React.Component {
-  render() {
-    const cards = this.props.clients.map(client => {
-      return (
-        <Card
-          key={client.id}
-          id={client.id}
-          name={client.name}
-          description={client.description}
-          status={client.status}
-        />
-      );
-    })
-    return (
-      <div className="Swimlane-column">
-        <div className="Swimlane-title">{this.props.name}</div>
-        <div className="Swimlane-dragColumn" ref={this.props.dragulaRef}>
-          {cards}
-        </div>
-      </div>);
-  }
+export default function Swimlane({ name, clients, dragulaRef, onCardDrag }) {
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'backlog':
+        return 'Card-grey'; // Example color for backlog
+      case 'in-progress':
+        return 'Card-blue'; // Example color for in-progress
+      case 'complete':
+        return 'Card-green'; // Example color for complete
+      default:
+        return 'white';
+    }
+  };
 
+  return (
+    <div className="Swimlane" >
+      <h2>{name}</h2>
+      <div className="cards" ref={dragulaRef}>
+        {clients.map(client => (
+          <Card
+            key={client.id}
+            id={client.id}
+            name={client.name}
+            description={client.description}
+            status={client.status}
+            onCardDrag={onCardDrag}
+            backgroundColor={getStatusColor(client.status)} // Apply background color
+          />
+        ))}
+      </div>
+    </div>
+  );
 }

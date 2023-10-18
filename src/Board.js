@@ -52,10 +52,10 @@ export default class Board extends React.Component {
     }));
   }
   renderSwimlane(name, clients, ref) {
-    return (
-      <Swimlane name={name} clients={clients} dragulaRef={ref}/>
-    );
-  }
+  return (
+    <Swimlane name={name} clients={clients} dragulaRef={ref} onCardDrag={this.handleCardDrag} />
+  );
+}
 
     componentDidMount() {
     this.dragulaContainers = Object.values(this.swimlanes).map(ref => ref.current);
@@ -68,6 +68,26 @@ export default class Board extends React.Component {
       this.dragulaInstance.destroy();
     }
   }
+
+  handleCardDrag = (cardId, newStatus) => {
+    this.setState(prevState => {
+      const clients = { ...prevState.clients };
+      const cardIndex = prevState.clients[newStatus].findIndex(client => client.id === cardId);
+      if (cardIndex === -1) {
+        // Card is not in the new swimlane, add it
+        clients[newStatus].push(prevState.clients[prevState.draggedFrom].find(client => client.id === cardId));
+      } else {
+        // Card is already in the new swimlane, reorder it
+        clients[newStatus].splice(cardIndex, 1);
+      }
+  
+      return {
+        clients,
+        draggedFrom: newStatus,
+      };
+    });
+  }
+  
 
   render() {
     return (
