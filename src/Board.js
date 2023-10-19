@@ -57,11 +57,23 @@ export default class Board extends React.Component {
   );
 }
 
-    componentDidMount() {
-    this.dragulaContainers = Object.values(this.swimlanes).map(ref => ref.current);
-    this.dragulaInstance = Dragula(this.dragulaContainers, {
-    });
-  }
+componentDidMount() {
+  this.dragulaContainers = Object.values(this.swimlanes).map(ref => ref.current);
+  this.dragulaInstance = Dragula(this.dragulaContainers, {
+    isContainer(el) {
+      return el.classList.contains('cards');
+    },
+  });
+
+  // Handle drag-and-drop events
+  this.dragulaInstance.on('drop', (el, target, source) => {
+    const cardId = el.getAttribute('data-id');
+    const newStatus = target.parentElement.getAttribute('data-status');
+    this.handleCardDrag(cardId, newStatus);
+  });
+}
+
+
 
   componentWillUnmount() {
     if (this.dragulaInstance) {
@@ -72,23 +84,41 @@ export default class Board extends React.Component {
   handleCardDrag = (cardId, newStatus) => {
     this.setState(prevState => {
       const clients = { ...prevState.clients };
-      const cardIndex = prevState.clients[newStatus].findIndex(client => client.id === cardId);
-      if (cardIndex === -1) {
-        // Card is not in the new swimlane, add it
-        clients[newStatus].push(prevState.clients[prevState.draggedFrom].find(client => client.id === cardId));
-      } else {
-        // Card is already in the new swimlane, reorder it
-        clients[newStatus].splice(cardIndex, 1);
+      const currentSwimlane = prevState.draggedFrom;
+      
+      if (!currentSwimlane) {
+        // This means a card is being initially dragged
+        return {
+          draggedFrom: newStatus,
+        };
       }
-  
+      if (newStatus === currentSwimlane) {
+        // Reorder the card within the same swimlane
+        const swimlaneClients = [...clients[currentSwimlane]];
+        const cardIndex = swimlaneClients.findIndex(client => client.id === cardId);
+        if (cardIndex !== -1) {
+          swimlaneClients.splice(cardIndex, 1);
+          clients[currentSwimlane] = swimlaneClients;
+        }
+      } else {
+        // Change swimlane and update color
+        const cardToMove = clients[currentSwimlane].find(client => client.id === cardId);
+        if (cardToMove) {
+          console.log(`Moving card with ID ${cardId} from ${currentSwimlane} to ${newStatus}`);
+          cardToMove.status = newStatus;
+          clients[currentSwimlane] = clients[currentSwimlane].filter(client => client.id !== cardId);
+          clients[newStatus] = [cardToMove, ...clients[newStatus]];
+        }
+      }
+
       return {
         clients,
         draggedFrom: newStatus,
       };
     });
-  }
-  
+  };
 
+  
   render() {
     return (
       <div className="Board">
