@@ -73,8 +73,6 @@ componentDidMount() {
   });
 }
 
-
-
   componentWillUnmount() {
     if (this.dragulaInstance) {
       this.dragulaInstance.destroy();
@@ -117,7 +115,6 @@ componentDidMount() {
       };
     });
   };
-
   
   render() {
     return (
