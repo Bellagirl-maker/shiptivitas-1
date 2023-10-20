@@ -4,6 +4,7 @@ import './Card.css';
 export default class Card extends React.Component {
   render() {
     let className = ['Card'];
+
     if (this.props.status === 'backlog') {
       className.push('Card-grey');
     } else if (this.props.status === 'in-progress') {
@@ -11,9 +12,15 @@ export default class Card extends React.Component {
     } else if (this.props.status === 'complete') {
       className.push('Card-green');
     }
+
+    // Check if the backgroundColor prop is provided, and use it if available
+    if (this.props.backgroundColor) {
+      className.push(this.props.backgroundColor);
+    }
+
     return (
       <div className={className.join(' ')} data-id={this.props.id} data-status={this.props.status}>
-        <div className="Card-title" style={{ backgroundColor: this.props.backgroundColor }}>
+        <div className="Card-title">
           {this.props.name}
         </div>
       </div>
