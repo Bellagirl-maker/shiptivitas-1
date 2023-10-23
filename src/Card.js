@@ -13,7 +13,6 @@ export default class Card extends React.Component {
       className.push('Card-green');
     }
 
-    // Check if the backgroundColor prop is provided, and use it if available
     if (this.props.backgroundColor) {
       className.push(this.props.backgroundColor);
     }
