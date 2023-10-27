@@ -5,7 +5,7 @@ export default function Swimlane({ name, clients, dragulaRef, onCardDrag }) {
   const getStatusColor = (status) => {
     switch (status) {
       case 'backlog':
-        return 'Card-grey'; // Example color for backlog
+        return 'Card-grey';  
       case 'in-progress':
         return 'Card-blue'; // Example color for in-progress
       case 'complete':
